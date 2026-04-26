@@ -1,9 +1,10 @@
 # FontSR LR32 baseline data params + SwinIR model config for controlled comparison
-# Data params sourced from /Users/butterflies/Project/FontSR/configs/exp_baseline_lr32.yaml
+# Data params sourced from FontSR/configs/exp_baseline_lr32.yaml.
+# Relative paths below resolve under FONTSR_ROOT, or an auto-detected sibling FontSR repo.
 
 data:
-  font_path: /Users/butterflies/Project/FontSR/resources/shufei.ttf
-  char_map_path: /Users/butterflies/Project/FontSR/resources/meta/shufei.txt
+  font_path: resources/shufei.ttf
+  char_map_path: resources/meta/shufei.txt
   train:
     params:
       hr_size: 128

@@ -9,6 +9,7 @@ Run these commands from the controlled comparison root:
 
 ```bash
 cd /Users/butterflies/Project/FontSR_Controlled
+export FONTSR_ROOT=/Users/butterflies/Project/FontSR
 ```
 
 `experiments/...` is intentionally rooted at this directory, so it can be a
@@ -21,6 +22,7 @@ It already covers the FontSR data stack; SwinIR adds `timm` and `cv2`.
 
 ```bash
 conda activate <fontsr-env>
+export FONTSR_ROOT=/path/to/FontSR
 python -c "import torch, torchvision, freetype, yaml, PIL, skimage, tqdm; print('FONTSR_ENV_OK')"
 python -c "import timm, cv2; print('SWINIR_EXTRA_OK')"
 ```
@@ -103,11 +105,11 @@ python SwinIR/export_fontsr_predictions.py \
 Or run the eval script directly:
 
 ```bash
-python /Users/butterflies/Project/FontSR/scripts/eval_variant_retrieval.py \
+python "$FONTSR_ROOT/scripts/eval_variant_retrieval.py" \
     --manifest experiments/smoke_swinir_fontsr/export_epoch_001/predictions_manifest.csv \
     --label-mode manifest \
-    --font-path /Users/butterflies/Project/FontSR/resources/shufei.ttf \
-    --char-map-path /Users/butterflies/Project/FontSR/resources/meta/shufei.txt \
+    --font-path "$FONTSR_ROOT/resources/shufei.ttf" \
+    --char-map-path "$FONTSR_ROOT/resources/meta/shufei.txt" \
     --output-dir experiments/smoke_swinir_fontsr/export_epoch_001/retrieval_eval \
     --device cpu \
     --top-k 3

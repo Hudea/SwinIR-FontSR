@@ -23,8 +23,28 @@ import torchvision.transforms.functional as F
 import yaml
 from PIL import Image
 
-# FontSR root — add to path once
-FONTSR_ROOT = Path("/Users/butterflies/Project/FontSR")
+def _resolve_fontsr_root() -> Path:
+    repo_dir = Path(__file__).resolve().parent
+    candidates: list[Path] = []
+    if os.environ.get("FONTSR_ROOT"):
+        candidates.append(Path(os.environ["FONTSR_ROOT"]))
+    candidates.extend(
+        [
+            repo_dir.parent / "FontSR",
+            repo_dir.parent.parent / "FontSR",
+            Path("/Users/butterflies/Project/FontSR"),
+        ]
+    )
+    for candidate in candidates:
+        root = candidate.expanduser().resolve()
+        if (root / "datasets" / "dataset.py").exists():
+            return root
+    searched = ", ".join(str(path) for path in candidates)
+    raise RuntimeError(f"Cannot locate FontSR root. Set FONTSR_ROOT. Searched: {searched}")
+
+
+# FontSR root — env override first, then common sibling layouts.
+FONTSR_ROOT = _resolve_fontsr_root()
 if str(FONTSR_ROOT) not in sys.path:
     sys.path.insert(0, str(FONTSR_ROOT))
 os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
@@ -44,6 +64,21 @@ logger = logging.getLogger(__name__)
 def load_config(path: str | Path) -> dict[str, Any]:
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def resolve_fontsr_path(path: str | Path) -> str:
+    candidate = Path(os.path.expandvars(os.path.expanduser(str(path))))
+    if candidate.is_absolute():
+        if candidate.exists():
+            return str(candidate)
+        parts = candidate.parts
+        if "FontSR" in parts:
+            rel = Path(*parts[parts.index("FontSR") + 1 :])
+            relocated = FONTSR_ROOT / rel
+            if relocated.exists():
+                return str(relocated)
+        return str(candidate)
+    return str(FONTSR_ROOT / candidate)
 
 
 def apply_difficulty_profile(config: dict[str, Any], profile: str) -> None:
@@ -181,8 +216,8 @@ class FontSRSwinIRDataset(torch.utils.data.Dataset):
         difficulty_profile = self._data_cfg.get("difficulty_profile", "level1")
 
         self._parent = OnlineRenderDataset(
-            font_path=self._data_cfg["font_path"],
-            char_map_path=self._data_cfg["char_map_path"],
+            font_path=resolve_fontsr_path(self._data_cfg["font_path"]),
+            char_map_path=resolve_fontsr_path(self._data_cfg["char_map_path"]),
             hr_size=params["hr_size"],
             lr_size=params["lr_size"],
             hr_font_size=params["hr_font_size"],
