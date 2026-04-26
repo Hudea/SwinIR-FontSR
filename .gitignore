@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Local venv (if using uv)
+.venv/
+
+# Experiment outputs
+experiments/
+
+# Byte-compiled / optimized
+models/__pycache__/

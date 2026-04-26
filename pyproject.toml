@@ -1,0 +1,18 @@
+[project]
+name = "fontsr-swinir-controlled"
+version = "0.1.0"
+description = "FontSR controlled comparison: SwinIR grayscale x4 baseline for LR32 to HR128"
+requires-python = ">=3.12"
+dependencies = [
+    "albumentations",
+    "freetype-py",
+    "numpy",
+    "opencv-python",
+    "Pillow",
+    "PyYAML",
+    "scikit-image",
+    "timm",
+    "torch",
+    "torchvision",
+    "tqdm",
+]

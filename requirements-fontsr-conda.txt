@@ -1,0 +1,3 @@
+# Extra packages needed on top of the FontSR conda environment.
+timm
+opencv-python
