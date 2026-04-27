@@ -32,19 +32,19 @@ import yaml
 from tqdm import tqdm
 
 from fontsr_swinir_utils import (
+    FONTSR_ROOT,
     FontSRSwinIRDataset,
     build_export_filename,
     build_swinir_model,
     load_config,
     resolve_device,
+    resolve_fontsr_path,
     save_grayscale_tensor,
     write_manifest,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
-
-FONTSR_ROOT = Path("/Users/butterflies/Project/FontSR")
 
 
 def main():
@@ -183,8 +183,8 @@ def main():
             str(FONTSR_ROOT / "scripts/eval_variant_retrieval.py"),
             "--manifest", str(manifest_path),
             "--label-mode", "manifest",
-            "--font-path", str(FONTSR_ROOT / "resources/shufei.ttf"),
-            "--char-map-path", str(FONTSR_ROOT / "resources/meta/shufei.txt"),
+            "--font-path", resolve_fontsr_path(config["data"].get("font_path", "resources/shufei.ttf")),
+            "--char-map-path", resolve_fontsr_path(config["data"].get("char_map_path", "resources/meta/shufei.txt")),
             "--output-dir", str(eval_dir),
             "--metric", args.retrieval_metric,
             "--device", args.retrieval_device,
