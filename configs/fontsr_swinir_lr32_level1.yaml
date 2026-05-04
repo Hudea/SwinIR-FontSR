@@ -1,39 +1,27 @@
-# FontSR LR32 baseline data params + SwinIR model config for controlled comparison
-# Data params sourced from FontSR/configs/exp_baseline_lr32.yaml.
-# Relative paths below resolve under FONTSR_ROOT, or an auto-detected sibling FontSR repo.
+# FontSR + SwinIR-Light config for LR32→HR128 FontSR comparison.
+# Compatible with FontSR datasets.build_dataset(data_cfg, split).
+# Data spec mirrors FontSR/configs/exp_baseline_lr32.yaml.
 
 data:
-  font_path: resources/shufei.ttf
-  char_map_path: resources/meta/shufei.txt
-  train:
-    params:
+  spec:
+    font:
+      font_path: resources/shufei.ttf
+    image:
       hr_size: 128
       lr_size: 32
       hr_font_size: 128
       lr_font_size: 32
-      hr_hinting: mac
       pad_mode: center
-      split: train
+    charset:
+      char_map_path: resources/meta/shufei.txt
       train_ratio: 0.9
       split_seed: 42
       split_mode: variant
       forced_val_chars:
-        - "\u6c38"
-  val:
-    params:
-      hr_size: 128
-      lr_size: 32
-      hr_font_size: 128
-      lr_font_size: 32
-      hr_hinting: mac
-      pad_mode: center
-      split: val
-      train_ratio: 0.9
-      split_seed: 42
-      split_mode: variant
-      forced_val_chars:
-        - "\u6c38"
-  difficulty_profile: level1
+        - "永"
+    stroke:
+      return_stroke_vector: false
+  level: level1
   dataloader:
     batch_size: 8
 
@@ -56,3 +44,16 @@ model:
   mlp_ratio: 2
   upsampler: pixelshuffledirect
   resi_connection: 1conv
+
+train:
+  seed: 42
+  lr: 2.0e-4
+  optim: adam
+  # MultiStepLR stepped per-epoch; milestones are EPOCH indices, not iter counts
+  scheduler:
+    type: multistep
+    milestones:
+      - 100
+      - 150
+      - 175
+    gamma: 0.5
